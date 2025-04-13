@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/965756436.svg)](https://doi.org/10.5281/zenodo.15208034)
+
 # Integer Population Grids
 
 **integer-population-grids** is an R package that provides tools for translating floating-point population grids into integer values. This package is designed for users who need a more communicatable and realistic population data in a grid format for spatial analysis, demographic studies, and related applications.
