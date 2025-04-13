@@ -1,0 +1,50 @@
+Package: IntPopGrids
+Title: Make you floating gridded population data into integers  
+Version: 1.0.0
+Authors@R:c(
+    person( 
+          given = "Wenbin", 
+          family = "Zhang", 
+          role = c("aut", "cre"), 
+          email = "zwb1027@gmail.com", 
+          comment = c(ORCID = "0000-0002-9295-1019")
+          ),
+	person( 
+          given = "Maksym", 
+          family = "Bondarenko", 
+          role = c("ctb"), 
+          email = "mb4@soton.ac.uk", 
+          comment = c(ORCID = "0000-0003-4958-6551")
+          ),
+    person( 
+          given = "Alessandro", 
+          family = "Sorichetta", 
+          role = c("ctb"), 
+          comment = c(ORCID = "0000-0002-3576-5826")
+          ),
+    person( 
+          given = "Gregory", 
+          family = "Yetman", 
+          role = c("ctb")
+          ),
+    person( 
+          given = "Jason", 
+          family = "Hilton", 
+          role = c("ctb")
+          ))
+Maintainer: Wenbin Zhang <zwb1027@gmail.com> 
+Description: This package provides tools to generate realistic integer population estimates from fractional population data while preserving the overall population distribution and total population count. If administrative unit raster data is provided, the population at the admin unit level is also maintained. Additionally, with the inclusion of age or sex group ratios, the package ensures that integer population estimates are generated for each group at the pixel level, while maintaining the original group ratios. This package is ideal for tasks requiring integer population input.
+URL: https://github.com/wpgp/IntPopGrids
+BugReports: https://github.com/wpgp/IntPopGrids/issues
+License: MIT
+Encoding: UTF-8
+Imports:
+    utils
+Depends: 
+    terra,
+    future,
+    future.apply
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+
+
