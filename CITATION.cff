@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Zhang"
+  given-names: "Wenbin"
+  orcid: "https://orcid.org/0000-0002-9295-1019"
+- family-names: "Bondarenko"
+  given-names: "Maksym"
+  orcid: "https://orcid.org/0000-0003-4958-6551"
+- family-names: "Sorichetta"
+  given-names: "Alessandro"
+  orcid: "https://orcid.org/0000-0002-3576-5826"  
+- family-names: "Yetman"
+  given-names: "Gregory"
+- family-names: "Hilton"
+  given-names: "Jason"  
+- family-names: "Tatem"
+  given-names: "Andrew"   
+title: "IntPopGrids: R package to translate floating-point population grids into integer values."
+version: 1.0.0
+doi: 10.5281/zenodo.15208035
+date-released: 2025-04-14
+url: "https://github.com/wpgp/IntPopGrids"
