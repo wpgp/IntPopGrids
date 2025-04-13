@@ -100,6 +100,9 @@ If you use IntPopGrids in your research, please cite:
   author = {Zhang W., Sorichetta A., Yetman G., Hilton J., Tatem A., Bondarenko M.},
   title = {IntPopGrids: R package to translate floating-point population grids into integer values.},
   publisher = {GitHub},
+  version = {1.0.0},
+  month = {4},
+  year = {2025},
   url = {https://github.com/wpgp/IntPopGrids}
 }
 ```
