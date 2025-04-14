@@ -10,8 +10,8 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Zhang
-    family-names: Wenbin
+  - given-names: Wenbin
+    family-names: Zhang
     email: zwb1027@gmail.com
     orcid: 'https://orcid.org/0000-0002-9295-1019'
   - given-names: Alessandro
