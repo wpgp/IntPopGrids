@@ -105,6 +105,7 @@ If you use IntPopGrids in your research, please cite:
   version = {1.0.0},
   month = {4},
   year = {2025},
+  doi = {10.5281/zenodo.15208035},
   url = {https://github.com/wpgp/IntPopGrids}
 }
 ```
