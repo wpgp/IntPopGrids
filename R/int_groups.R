@@ -93,7 +93,6 @@ int_groups <- function(POP_path, group_path, admin_path,
                  overwrite = TRUE,
                  datatype = "INT4U",
                  verbose = FALSE)
-      on.exit({writeStop(out);rm(out);gc()}, add = TRUE)
       for (b in 1:bs$n) {
         row0 <- bs$row[b]
         nr   <- bs$nrows[b]
