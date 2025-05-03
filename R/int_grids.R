@@ -67,7 +67,6 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
                 gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                 overwrite = TRUE,
                 datatype = "INT4U",
-                NAflag = -1,
                 verbose = FALSE)
     invisible()
     cat("** Done!")
@@ -117,7 +116,6 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
                   gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                   overwrite = TRUE,
                   datatype = "INT4U",
-                  NAflag = -1,
                   verbose = FALSE)
       invisible()
       cat("** Done!")
