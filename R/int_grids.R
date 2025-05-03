@@ -61,6 +61,16 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       pop_int_values <- pop_int_values + adjustment
       values(POP_float) <- pop_int_values
     }
+    cat("** Writing int pop rasters in:\n**", output_dir, "\n")
+    writeRaster(POP_float,
+                filename = fname,
+                gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
+                overwrite = TRUE,
+                datatype = "INT4U",
+                NAflag = -1,
+                verbose = FALSE)
+    invisible()
+    cat("** Done!")
   } else {
     admin_rast <- rast(admin_path)
     pop_rast <- c(POP_float, admin_rast)
@@ -101,6 +111,16 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
     })
     if (!is.null(df_int)) {
       POP_float[df_int$cell] <- df_int$pop_int_final
+      cat("** Writing int pop rasters in:\n**", output_dir, "\n")
+      writeRaster(POP_float,
+                  filename = fname,
+                  gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
+                  overwrite = TRUE,
+                  datatype = "INT4U",
+                  NAflag = -1,
+                  verbose = FALSE)
+      invisible()
+      cat("** Done!")
     } else {
       admin_ids <- unique(values(admin_rast))
       admin_ids <- admin_ids[!is.na(admin_ids)]
@@ -139,7 +159,7 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       ff_path <- file.path(result_folder, "popint", "pop_matrix.ffdata")
       if (file.exists(ff_path)) unlink(ff_path,force = T)
       mat_ff  <- ff(vmode = "integer",
-                    dim   = c(ncell_tot, 2),
+                    dim   = c(ncell_tot, 1),
                     filename = ff_path,
                     initdata = NA)
       handlers("txtprogressbar")
@@ -147,12 +167,11 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
         p <- progressor(along = admin_ids)
         for (id in admin_ids) {
           dat <- readRDS(file.path(temp_dir, paste0(id, ".rds")))
-          mat_ff[dat[, 1], ] <- dat[, -1]
+          mat_ff[dat[, 1]] <- dat[,2]
           gc()
           p()
         }
       })
-      close(mat_ff)
       cat("** Writing int pop rasters in:\n**", output_dir)
       bs <- blocks(admin)
       nc <- ncol(admin)
@@ -162,27 +181,17 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
                  overwrite = TRUE,
                  datatype = "INT4U",
                  verbose = FALSE)
-      on.exit({writeStop(out);rm(out);gc()}, add = TRUE)
       for (b in 1:bs$n) {
         row0 <- bs$row[b]
         nr   <- bs$nrows[b]
         cell_idx <- ((row0 - 1L) * nc + 1L) : ((row0 + nr - 1L) * nc)
-        vals <- mat_ff[cell_idx, g]
-        writeValues(out, v = vals, start = bs$row[b], nrows = bs$nrows[b])
+        writeValues(out, v = mat_ff[cell_idx], start = row0, nrows = nr)
       }
-      if (file.exists(ff_path)) unlink(ff_path,force = T)
+      writeStop(out)
+      close(mat_ff)
+      unlink(temp_dir, recursive = TRUE, force = TRUE)
       cat("** Done!")
       return(invisible())
     }
   }
-  cat("** Writing int pop rasters in:\n**", output_dir, "\n")
-  writeRaster(POP_float,
-              filename = fname,
-              gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
-              overwrite = TRUE,
-              datatype = "INT4U",
-              NAflag = -1,
-              verbose = FALSE)
-  invisible()
-  cat("** Done!")
 }
