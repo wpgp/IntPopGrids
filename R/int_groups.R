@@ -38,8 +38,9 @@ int_groups <- function(POP_path, group_path, admin_path,
   if (is.null(workers)) workers <- max(1, availableCores() - 1)
   plan(multisession, workers = workers)
   cat("* It may take some time to process.\n* In the meantime, it might be a good opportunity to relax and enjoy a cup of tea.\n")
-  cat("** Processing.....\n")
-  handlers("txtprogressbar")
+  handlers(progressr::handler_progress(
+    format = "**Processing..... [:bar] :percent",
+    clear  = FALSE))
   result_list <- with_progress({
     p <- progressor(along = admin_ids)
     future_lapply(seq_along(admin_ids), function(i) {
@@ -58,36 +59,42 @@ int_groups <- function(POP_path, group_path, admin_path,
     }, future.seed = TRUE)
   })
   plan(sequential)
-  cat("** Writing int pop rasters in:\n**", output_dir)
-  POP_float <- rast(POP_path)
-  admin     <- rast(admin_path)
-  ncell_tot  <- ncell(admin)
-  group_names <- names(groups)[-1]
-  ng <- length(group_names)
-  ff_path <- file.path(result_folder, "popint", "pop_matrix.ffdata")
-  if (file.exists(ff_path)) unlink(ff_path,force = T)
-  mat_ff  <- ff(vmode = "integer",
-                dim   = c(ncell_tot, ng),
-                filename = ff_path,
-                initdata = NA)
-  handlers("txtprogressbar")
+  admin <- rast(admin_path)
+  ncell_tot <- ncell(admin)
+  vec_ff <- lapply(group_names, function(g)
+    ff(vmode = "integer",
+       length = ncell_tot,
+       filename = file.path(temp_dir, paste0(g,".ffdata")),
+       initdata = NA))
+  names(vec_ff) <- group_names
+  handlers(progressr::handler_progress(
+    format = "***Writing temp files [:bar] :percent | :message",
+    clear  = FALSE))
+  total_units <- length(admin_ids)
   with_progress({
-    p <- progressor(along = admin_ids)
-    for (id in admin_ids) {
+    p <- progressor(steps = total_units)
+    for (id_i in seq_along(admin_ids)) {
+      id <- admin_ids[id_i]
       dat <- readRDS(file.path(temp_dir, paste0(id, ".rds")))
-      mat_ff[dat[, 1], ] <- dat[, -1]
-      gc()
-      p()
+      idx  <- dat[, 1]
+      for (g in group_names) {
+        vec_ff[[g]][idx] <- dat[,g]
+      }
+      p(message = sprintf("Admin units: %d / %d", id_i, total_units))
     }
   })
-  close(mat_ff)
   bs <- blocks(admin)
   nc <- ncol(admin)
+  total_g  <- length(group_names)
+  handlers(progressr::handler_progress(
+    format = "****Writing rasters [:bar] :percent | :message",
+    clear  = FALSE))
   with_progress({
-    p <- progressor(steps = ng*bs$n)
-    for (g in seq_along(group_names)) {
+    p <- progressor(steps = total_g * bs$n)
+    for (g_i in seq_along(group_names)) {
+      g     <- group_names[g_i]
       out   <- rast(POP_path) * NA
-      fname <- file.path(output_dir,paste0(tools::file_path_sans_ext(basename(POP_path)),"_",group_names[g],".tif"))
+      fname <- file.path(output_dir,paste0(tools::file_path_sans_ext(basename(POP_path)),"_",g,".tif"))
       writeStart(out, filename = fname,
                  gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                  overwrite = TRUE,
@@ -97,14 +104,15 @@ int_groups <- function(POP_path, group_path, admin_path,
         row0 <- bs$row[b]
         nr   <- bs$nrows[b]
         cell_idx <- ((row0 - 1L) * nc + 1L) : ((row0 + nr - 1L) * nc)
-        vals <- mat_ff[cell_idx, g]
-        writeValues(out, v = vals, start = bs$row[b], nrows = bs$nrows[b])
-        p()
+        vals <- vec_ff[[g]][cell_idx]
+        writeValues(out, v = vals, start = row0, nrows = nr)
+        p(message = sprintf("groups %2d / %d | blocks %3d / %d",g_i, total_g, b, bs$n))
       }
       writeStop(out)
     } 
   })
-  if (file.exists(ff_path)) unlink(ff_path,force = T)
-  invisible()
+  lapply(vec_ff, close)
+  unlink(temp_dir, recursive = TRUE, force = TRUE)
   cat("** Done!")
+  cat("** Find results in:", output_dir)
 }
