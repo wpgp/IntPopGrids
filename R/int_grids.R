@@ -36,9 +36,9 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
   if (missing(POP_path)) {
     stop("Error: Parameter 'POP_path' is required and must be provided.")
   }
-  output_dir <- file.path(result_folder, "popint", tools::file_path_sans_ext(basename(POP_path)))
+  output_dir <- file.path(result_folder, tools::file_path_sans_ext(basename(POP_path)))
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
-  temp_dir <- file.path(result_folder, "popint", "tmp")
+  temp_dir <- file.path(result_folder, "tmp")
   dir.create(temp_dir, recursive = TRUE, showWarnings = FALSE)
   fname <- file.path(output_dir,paste0(tools::file_path_sans_ext(basename(POP_path)),"_",method,"_int.tif"))
   
@@ -66,7 +66,6 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
                 filename = fname,
                 gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                 overwrite = TRUE,
-                datatype = "INT4U",
                 verbose = FALSE)
     invisible()
     cat("** Done!")
@@ -115,7 +114,6 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
                   filename = fname,
                   gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                   overwrite = TRUE,
-                  datatype = "INT4U",
                   verbose = FALSE)
       invisible()
       cat("** Done!")
@@ -177,7 +175,6 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       writeStart(out, filename = fname,
                  gdal = c("COMPRESS=LZW", "BLOCKXSIZE=512", "BLOCKYSIZE=512", "TILED=YES", "BIGTIFF=YES"),
                  overwrite = TRUE,
-                 datatype = "INT4U",
                  verbose = FALSE)
       for (b in 1:bs$n) {
         row0 <- bs$row[b]
@@ -192,4 +189,5 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       return(invisible())
     }
   }
+  unlink(temp_dir, recursive = TRUE, force = TRUE)
 }
