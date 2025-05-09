@@ -55,7 +55,7 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       pop_int_sum <- sum(pop_int_values, na.rm=T)
       pop_sum <- sum(pop_float_values, na.rm=T)
       diff <- round(pop_sum - pop_int_sum)
-      idx <- order(pop_float_values - pop_int_values, decreasing = (diff < 0))
+      idx <- order(pop_float_values - pop_int_values, decreasing = (diff > 0))
       adjustment <- rep(0, n_cells)
       adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
       pop_int_values <- pop_int_values + adjustment
@@ -95,7 +95,7 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
             pop_int_sum <- sum(this$pop_int)
             pop_sum <- sum(this$pop)
             diff <- round(pop_sum - pop_int_sum)
-            idx <- order(this$pop - this$pop_int, decreasing = (diff < 0))
+            idx <- order(this$pop - this$pop_int, decreasing = (diff > 0))
             adjustment <- rep(0, n_cells)
             adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
             this$pop_int_final <- this$pop_int + adjustment
@@ -139,7 +139,7 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
           pop_int_sum <- sum(pop_int_values, na.rm=T)
           pop_sum <- sum(pop_vals, na.rm=T)
           diff <- round(pop_sum - pop_int_sum)
-          idx <- order(pop_vals - pop_int_values, decreasing = (diff < 0))
+          idx <- order(pop_vals - pop_int_values, decreasing = (diff > 0))
           adjustment <- rep(0, n_cells)
           adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
           pop_int_vals <- pop_int_values + adjustment
