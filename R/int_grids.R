@@ -54,10 +54,10 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
       pop_int_values <- round(pop_float_values)
       pop_int_sum <- sum(pop_int_values, na.rm=T)
       pop_sum <- sum(pop_float_values, na.rm=T)
-      diff <- round(pop_int_sum - pop_sum)
+      diff <- round(pop_sum - pop_int_sum)
+      idx <- order(pop_float_values - pop_int_values, decreasing = (diff < 0))
       adjustment <- rep(0, n_cells)
-      if (diff > 0) adjustment[1:diff] <- -1
-      else if (diff < 0) adjustment[1:abs(diff)] <- 1
+      adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
       pop_int_values <- pop_int_values + adjustment
       values(POP_float) <- pop_int_values
     }
@@ -94,10 +94,10 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
             n_cells <- nrow(this)
             pop_int_sum <- sum(this$pop_int)
             pop_sum <- sum(this$pop)
-            diff <- round(pop_int_sum - pop_sum)
+            diff <- round(pop_sum - pop_int_sum)
+            idx <- order(this$pop - this$pop_int, decreasing = (diff < 0))
             adjustment <- rep(0, n_cells)
-            if (diff > 0) adjustment[1:diff] <- -1
-            else if (diff < 0) adjustment[1:abs(diff)] <- 1
+            adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
             this$pop_int_final <- this$pop_int + adjustment
             return(this)
           }) %>%
@@ -138,10 +138,10 @@ int_grid <- function(POP_path, admin_path = NULL, result_folder = getwd(), worke
           pop_int_values <- round(pop_vals)
           pop_int_sum <- sum(pop_int_values, na.rm=T)
           pop_sum <- sum(pop_vals, na.rm=T)
-          diff <- round(pop_int_sum - pop_sum)
+          diff <- round(pop_sum - pop_int_sum)
+          idx <- order(pop_vals - pop_int_values, decreasing = (diff < 0))
           adjustment <- rep(0, n_cells)
-          if (diff > 0) adjustment[1:diff] <- -1
-          else if (diff < 0) adjustment[1:abs(diff)] <- 1
+          adjustment[idx[seq_len(abs(diff))]] <- sign(diff)
           pop_int_vals <- pop_int_values + adjustment
         }
         out_mat  <- cbind(matrix(mask_index,ncol=1), matrix(pop_int_vals,ncol=1))
